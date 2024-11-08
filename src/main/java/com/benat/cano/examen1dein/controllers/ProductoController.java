@@ -99,15 +99,75 @@ public class ProductoController implements Initializable {
 
     @FXML
     void crear(ActionEvent event) {
-        // Lógica para crear un nuevo producto
-    }
+        ArrayList<String> failMessages = new ArrayList<>();
 
+        // Validación de código: debe tener exactamente 5 caracteres
+        String codigo = txtCodigo.getText();
+        if (codigo.length() != 5) {
+            failMessages.add("El código debe tener exactamente 5 caracteres.");
+        }
+
+        // Validación de nombre: campo obligatorio
+        String nombre = txtNombre.getText();
+        if (nombre.isEmpty()) {
+            failMessages.add("El nombre es obligatorio.");
+        }
+
+        // Validación de precio: debe ser un número decimal y no vacío
+        String precioStr = txtPrecio.getText();
+        if (precioStr.isEmpty()) {
+            failMessages.add("El precio es obligatorio.");
+        } else {
+            try {
+                Double precio = Double.parseDouble(precioStr);
+                if (precio <= 0) {
+                    failMessages.add("El precio debe ser un número mayor que 0.");
+                }
+            } catch (NumberFormatException e) {
+                failMessages.add("El precio debe ser un número decimal válido.");
+            }
+        }
+
+        // Si hay errores, mostrar la alerta de error y no continuar
+        if (!failMessages.isEmpty()) {
+            alerta(failMessages);
+            return;
+        }
+
+        // Si las validaciones son correctas, proceder a guardar el producto
+        // Crear el nuevo producto
+        Producto nuevoProducto = new Producto(codigo, nombre, Double.parseDouble(precioStr), true, blob);
+
+        // Llamar al DAO para guardar el producto en la base de datos
+        boolean success = DaoProducto.guardarProducto(nuevoProducto);
+
+        if (success) {
+            // Informar al usuario que todo ha ido bien
+            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+            successAlert.setTitle("Producto Creado");
+            successAlert.setHeaderText(null);
+            successAlert.setContentText("El producto se ha creado correctamente.");
+            successAlert.showAndWait();
+
+            // Volver a cargar los productos y limpiar los campos
+            cargarProductos();
+            limpiar();
+        } else {
+            // Error genérico al guardar el producto
+            ArrayList<String> dbErrorMessages = new ArrayList<>();
+            dbErrorMessages.add("Ha ocurrido un error al guardar el producto en la base de datos.");
+            alerta(dbErrorMessages);
+        }
+    }
     @FXML
-    void limpiar(ActionEvent event) {
+    void limpiar() {
         txtCodigo.clear();
         txtNombre.clear();
         txtPrecio.clear();
+        img.setImage(null); // Limpiar la imagen seleccionada
+        blob = null; // Limpiar la imagen en Blob
     }
+
 
     @FXML
     void seleccionarImagen(ActionEvent event) {

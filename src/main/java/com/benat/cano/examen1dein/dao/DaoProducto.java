@@ -75,4 +75,32 @@ public class DaoProducto {
         }
     }
 
+    public static boolean guardarProducto(Producto producto) {
+        String consulta = "INSERT INTO productos (codigo, nombre, precio, disponible,imagen) VALUES (?, ?, ?, ?, ?)";
+        ConectorDB conn;
+        try {
+            conn=new ConectorDB();
+            PreparedStatement stmt = conn.getConnection().prepareStatement(consulta);
+            stmt.setString(1, producto.getCodigo());
+            stmt.setString(2, producto.getNombre());
+            stmt.setDouble(3, producto.getPrecio());
+            stmt.setInt(4, producto.isDisponible() ? 1 : 0);
+
+            // Guardar la imagen como Blob
+            if (producto.getImagen() != null) {
+                stmt.setBlob(5, producto.getImagen());
+            } else {
+                stmt.setNull(5, Types.BLOB);
+            }
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0; // Si la inserción fue exitosa, se devuelven más de 0 filas afectadas
+        } catch (SQLException e) {
+            System.err.println("Error al guardar el producto: " + e.getMessage());
+            return false;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
