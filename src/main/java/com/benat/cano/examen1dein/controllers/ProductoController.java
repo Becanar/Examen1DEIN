@@ -128,7 +128,47 @@ public class ProductoController implements Initializable {
     }
 
     private void borrar(Object o) {
+        // Verificamos si el objeto recibido es una instancia de Producto
+        Producto producto = tablaVista.getSelectionModel().getSelectedItem();
+
+            // Mostrar alerta de confirmación
+            Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+            alerta.setTitle("Confirmar eliminación");
+            alerta.setHeaderText("¿Estás seguro de que deseas eliminar el producto?");
+            alerta.setContentText("El producto con código: " + producto.getCodigo() + " será eliminado.");
+
+            // Si el usuario hace clic en "OK" (confirmar)
+            ButtonType respuesta = alerta.showAndWait().orElse(ButtonType.CANCEL);
+            if (respuesta == ButtonType.OK) {
+                // Llamamos al método para eliminar el producto de la base de datos
+                boolean exito = DaoProducto.eliminarProducto(producto);
+
+                if (exito) {
+                    // Si la eliminación fue exitosa, mostramos una alerta de éxito
+                    ArrayList<String> textosExito = new ArrayList<>();
+                    textosExito.add("El producto ha sido eliminado correctamente.");
+                    alerta(textosExito); // Usamos el método alerta ya implementado para mostrar el mensaje
+
+                    // Recargar la tabla de productos
+                    cargarProductos();
+
+                    // Limpiar el formulario
+                    limpiar();
+
+                    // Restaurar el estado de los botones
+                    txtCodigo.setDisable(false);
+                    btActualizar.setDisable(true);
+                    btCrear.setDisable(false);
+                } else {
+                    // Si ocurrió un error, mostramos una alerta de error
+                    ArrayList<String> textosError = new ArrayList<>();
+                    textosError.add("Ha ocurrido un error al intentar eliminar el producto.");
+                    alerta(textosError);
+                }
+            }
+
     }
+
 
     private void verImg(Object o) {
     }

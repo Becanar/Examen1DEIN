@@ -134,4 +134,24 @@ public class DaoProducto {
         }
     }
 
+    public static boolean eliminarProducto(Producto producto) {
+        String consulta = "DELETE FROM productos WHERE codigo = ?";
+        ConectorDB conn;
+        try {
+            conn = new ConectorDB();
+            PreparedStatement stmt = conn.getConnection().prepareStatement(consulta);
+
+            // Establecer el valor del parámetro (código del producto a eliminar)
+            stmt.setString(1, producto.getCodigo());
+
+            // Ejecutar la consulta
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0; // Si la eliminación fue exitosa, devuelve true
+        } catch (SQLException | FileNotFoundException e) {
+            System.err.println("Error al eliminar el producto: " + e.getMessage());
+            return false; // Si ocurre un error, devolvemos false
+        }
+    }
+
+
 }
