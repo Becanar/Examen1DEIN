@@ -1,97 +1,88 @@
 package com.benat.cano.examen1dein.app;
 
+import com.benat.cano.examen1dein.dao.DaoProducto;
+import com.benat.cano.examen1dein.model.Producto;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.VBox;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 
-public class ProductoController {
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+
+public class ProductoController implements Initializable {
 
     @FXML
-    private MenuItem acercaDe;
+    private TableView<Producto> tablaVista;
 
     @FXML
-    private MenuBar barraMenu;
+    private TableColumn<Producto, Integer> clCod;
 
     @FXML
-    private Button btActualizar;
+    private TableColumn<Producto, String> colNom;
 
     @FXML
-    private Button btCrear;
+    private TableColumn<Producto, Double> colPrec;
 
     @FXML
-    private Button btImagen;
+    private TableColumn<Producto, Boolean> colDisp;
 
     @FXML
-    private Button btLimpiar;
+    private TextField txtCodigo, txtNombre, txtPrecio;
 
     @FXML
-    private CheckBox checkBox;
+    private Button btCrear, btActualizar, btLimpiar, btImagen;
 
-    @FXML
-    private TableColumn<?, ?> clCod;
+    private ObservableList<Producto> productosData;
 
-    @FXML
-    private TableColumn<?, ?> colDisp;
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Inicializa las columnas de la tabla
+        clCod.setCellValueFactory(cellData -> cellData.getValue().codigoProperty().asObject());
+        colNom.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
+        colPrec.setCellValueFactory(cellData -> cellData.getValue().precioProperty().asObject());
+        colDisp.setCellValueFactory(cellData -> cellData.getValue().disponibleProperty());
 
-    @FXML
-    private TableColumn<?, ?> colNom;
+        // Cargar datos desde la base de datos
+        cargarProductos();
+    }
 
-    @FXML
-    private TableColumn<?, ?> colPrec;
-
-    @FXML
-    private Menu menuAyuda;
-
-    @FXML
-    private FlowPane panelListado;
-
-    @FXML
-    private VBox rootPane;
-
-    @FXML
-    private TableView<?> tablaVista;
-
-    @FXML
-    private TextField txtCodigo;
-
-    @FXML
-    private TextField txtNombre;
-
-    @FXML
-    private TextField txtPrecio;
+    /**
+     * Carga los productos desde la base de datos y los muestra en la tabla.
+     */
+    private void cargarProductos() {
+        List<Producto> productos = DaoProducto.obtenerProductos();
+        productosData = FXCollections.observableArrayList(productos);
+        tablaVista.setItems(productosData);
+    }
 
     @FXML
     void acercaDe(ActionEvent event) {
-
+        // Lógica para mostrar la información acerca de
     }
 
     @FXML
     void actualizar(ActionEvent event) {
-
+        // Lógica para actualizar un producto existente
     }
 
     @FXML
     void crear(ActionEvent event) {
-
+        // Lógica para crear un nuevo producto
     }
 
     @FXML
     void limpiar(ActionEvent event) {
-
+        txtCodigo.clear();
+        txtNombre.clear();
+        txtPrecio.clear();
     }
 
     @FXML
     void seleccionarImagen(ActionEvent event) {
-
+        // Lógica para seleccionar y cargar una imagen para el producto
     }
-
 }
