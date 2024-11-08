@@ -7,14 +7,20 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-
+/**
+ * Clase principal que lanza la aplicacion de gestion de productos.
+ *
+ * Esta clase extiende de {@link Application} y se encarga de cargar la interfaz de usuario,
+ * establecer la configuracion inicial del escenario y aplicar los estilos necesarios.
+ */
 public class App extends Application {
-
     /**
-     * Metodo start, que inicializa y muestra la ventana principal de la aplicación.
+     * Metodo que se ejecuta al iniciar la aplicacion.
+     * Carga el archivo FXML, establece las dimensiones del escenario,
+     * agrega un icono al escenario y aplica el archivo CSS de estilos.
      *
-     * @param stage El escenario principal en el que se mostrará la interfaz.
-     * @throws IOException Si hay un error al cargar el archivo FXML.
+     * @param stage El escenario principal de la aplicacion.
+     * @throws IOException Si ocurre un error al cargar el archivo FXML.
      */
     @Override
     public void start(Stage stage) throws IOException {
@@ -35,9 +41,11 @@ public class App extends Application {
         stage.setScene(scene);
         stage.show();
     }
+
     /**
-     * Metodo main que lanza la aplicacion.a
-     * @param args Argumentos de la línea de comandos.
+     * Metodo principal que lanza la aplicacion.
+     *
+     * @param args Los argumentos de la aplicacion.
      */
     public static void main(String[] args) {
         launch();

@@ -11,20 +11,23 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Clase encargada de realizar operaciones de acceso a la base de datos
+ * relacionadas con los productos, como obtener, guardar, modificar y eliminar productos.
+ */
 public class DaoProducto {
 
-
     /**
-     * Obtiene una lista de productos desde la base de datos.
+     * Obtiene la lista de productos desde la base de datos.
      *
-     * @return Lista de productos.
+     * @return Una lista de objetos {@link Producto} que contienen los datos de los productos.
      */
     public static List<Producto> obtenerProductos() {
         List<Producto> productos = new ArrayList<>();
         String query = "SELECT codigo, nombre, precio, disponible, imagen FROM productos";
         ConectorDB conn;
         try {
-            conn=new ConectorDB();
+            conn = new ConectorDB();
             PreparedStatement stmt = conn.getConnection().prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -47,22 +50,19 @@ public class DaoProducto {
     }
 
     /**
-     * Convierte un archivo de tipo File a un objeto Blob para ser almacenado en la base de datos.
+     * Convierte un archivo de imagen a un objeto {@link Blob} para almacenarlo en la base de datos.
      *
-     * @param file el archivo a convertir a Blob
-     * @return el Blob generado a partir del archivo
-     * @throws SQLException en caso de errores al trabajar con la base de datos
-     * @throws IOException  en caso de errores al leer el archivo
+     * @param file El archivo de imagen a convertir.
+     * @return El objeto {@link Blob} que representa la imagen.
+     * @throws SQLException Si ocurre un error al crear el Blob.
+     * @throws IOException Si ocurre un error al leer el archivo.
      */
     public static Blob convertFileToBlob(File file) throws SQLException, IOException {
         ConectorDB connection = new ConectorDB();
-        // Open a connection to the database
         try (Connection conn = connection.getConnection();
              FileInputStream inputStream = new FileInputStream(file)) {
 
-            // Create Blob
             Blob blob = conn.createBlob();
-            // Write the file's bytes to the Blob
             byte[] buffer = new byte[1024];
             int bytesRead;
 
@@ -75,18 +75,23 @@ public class DaoProducto {
         }
     }
 
+    /**
+     * Guarda un nuevo producto en la base de datos.
+     *
+     * @param producto El producto que se va a guardar.
+     * @return {@code true} si el producto se guardó correctamente, {@code false} si hubo un error.
+     */
     public static boolean guardarProducto(Producto producto) {
-        String consulta = "INSERT INTO productos (codigo, nombre, precio, disponible,imagen) VALUES (?, ?, ?, ?, ?)";
+        String consulta = "INSERT INTO productos (codigo, nombre, precio, disponible, imagen) VALUES (?, ?, ?, ?, ?)";
         ConectorDB conn;
         try {
-            conn=new ConectorDB();
+            conn = new ConectorDB();
             PreparedStatement stmt = conn.getConnection().prepareStatement(consulta);
             stmt.setString(1, producto.getCodigo());
             stmt.setString(2, producto.getNombre());
             stmt.setDouble(3, producto.getPrecio());
             stmt.setInt(4, producto.isDisponible() ? 1 : 0);
 
-            // Guardar la imagen como Blob
             if (producto.getImagen() != null) {
                 stmt.setBlob(5, producto.getImagen());
             } else {
@@ -94,7 +99,7 @@ public class DaoProducto {
             }
 
             int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0; // Si la inserción fue exitosa, se devuelven más de 0 filas afectadas
+            return rowsAffected > 0;
         } catch (SQLException e) {
             System.err.println("Error al guardar el producto: " + e.getMessage());
             return false;
@@ -103,7 +108,12 @@ public class DaoProducto {
         }
     }
 
-
+    /**
+     * Modifica un producto existente en la base de datos.
+     *
+     * @param producto El producto con los nuevos datos.
+     * @return {@code true} si el producto se actualizó correctamente, {@code false} si hubo un error.
+     */
     public static boolean modificarProducto(Producto producto) {
         String consulta = "UPDATE productos SET nombre = ?, precio = ?, disponible = ?, imagen = ? WHERE codigo = ?";
         ConectorDB conn;
@@ -111,29 +121,32 @@ public class DaoProducto {
             conn = new ConectorDB();
             PreparedStatement stmt = conn.getConnection().prepareStatement(consulta);
 
-            // Establecer los valores de los parámetros en la consulta
             stmt.setString(1, producto.getNombre());
             stmt.setDouble(2, producto.getPrecio());
             stmt.setInt(3, producto.isDisponible() ? 1 : 0);
 
-            // Guardar la imagen como Blob (si existe)
             if (producto.getImagen() != null) {
                 stmt.setBlob(4, producto.getImagen());
             } else {
-                stmt.setNull(4, Types.BLOB); // Si no hay imagen, establecemos NULL en la columna de imagen
+                stmt.setNull(4, Types.BLOB);
             }
 
-            stmt.setString(5, producto.getCodigo()); // El código se usa para identificar el producto a modificar
+            stmt.setString(5, producto.getCodigo());
 
-            // Ejecutar la consulta
             int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0; // Si la actualización fue exitosa, devuelve true
+            return rowsAffected > 0;
         } catch (SQLException | FileNotFoundException e) {
             System.err.println("Error al modificar el producto: " + e.getMessage());
-            return false; // Si hay un error, devolvemos false
+            return false;
         }
     }
 
+    /**
+     * Elimina un producto de la base de datos.
+     *
+     * @param producto El producto que se va a eliminar.
+     * @return {@code true} si el producto se eliminó correctamente, {@code false} si hubo un error.
+     */
     public static boolean eliminarProducto(Producto producto) {
         String consulta = "DELETE FROM productos WHERE codigo = ?";
         ConectorDB conn;
@@ -141,17 +154,13 @@ public class DaoProducto {
             conn = new ConectorDB();
             PreparedStatement stmt = conn.getConnection().prepareStatement(consulta);
 
-            // Establecer el valor del parámetro (código del producto a eliminar)
             stmt.setString(1, producto.getCodigo());
 
-            // Ejecutar la consulta
             int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0; // Si la eliminación fue exitosa, devuelve true
+            return rowsAffected > 0;
         } catch (SQLException | FileNotFoundException e) {
             System.err.println("Error al eliminar el producto: " + e.getMessage());
-            return false; // Si ocurre un error, devolvemos false
+            return false;
         }
     }
-
-
 }

@@ -60,7 +60,12 @@ public class ProductoController implements Initializable {
 
     private ObservableList<Producto> productosData;
     private Blob blob;
-
+    /**
+     * Inicializa el controlador y configura la vista de los productos.
+     *
+     * @param url      la URL de la ubicación del archivo FXML.
+     * @param resourceBundle el paquete de recursos que contiene los datos.
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         tablaVista.getSelectionModel().clearSelection();
@@ -85,10 +90,8 @@ public class ProductoController implements Initializable {
                     img.setImage(null);
                 }
 
-                // Establecer el estado del CheckBox (disponible o no)
                 checkBox.setSelected(productoSeleccionado.isDisponible());
 
-                // Deshabilitar el campo código y habilitar el botón Actualizar
                 txtCodigo.setDisable(true);
                 btActualizar.setDisable(false);
                 btCrear.setDisable(true);
@@ -98,7 +101,6 @@ public class ProductoController implements Initializable {
 
         FontIcon iconoAniadir = new FontIcon(FontAwesomeRegular.IMAGE);
         btImagen.setGraphic(iconoAniadir);
-        // Inicializa las columnas de la tabla
         clCod.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getCodigo()));
         colNom.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getNombre()));
         colPrec.setCellValueFactory(cellData -> cellData.getValue().getPrecio() == 0 ? null : new ReadOnlyObjectWrapper<>(cellData.getValue().getPrecio()));
@@ -106,10 +108,8 @@ public class ProductoController implements Initializable {
         colDisp.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().isDisponible()));
 
 
-        // Usamos CheckBoxTableCell para mostrar el CheckBox en cada fila
         colDisp.setCellFactory(CheckBoxTableCell.forTableColumn(colDisp));
 
-        // Cargar datos desde la base de datos
         cargarProductos();
 
         ContextMenu contextMenu = new ContextMenu();
@@ -126,41 +126,36 @@ public class ProductoController implements Initializable {
         tablaVista.setContextMenu(contextMenu);
         btActualizar.setDisable(true);
     }
-
+    /**
+     * Borra un producto de la base de datos después de una confirmación del usuario.
+     *
+     * @param o objeto que puede ser utilizado para manejar el evento (en este caso no se usa).
+     */
     private void borrar(Object o) {
-        // Verificamos si el objeto recibido es una instancia de Producto
         Producto producto = tablaVista.getSelectionModel().getSelectedItem();
 
-        // Mostrar alerta de confirmación
         Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
         alerta.setTitle("Confirmar eliminación");
         alerta.setHeaderText("¿Estás seguro de que deseas eliminar el producto?");
         alerta.setContentText("El producto con código: " + producto.getCodigo() + " será eliminado.");
 
-        // Si el usuario hace clic en "OK" (confirmar)
         ButtonType respuesta = alerta.showAndWait().orElse(ButtonType.CANCEL);
         if (respuesta == ButtonType.OK) {
-            // Llamamos al método para eliminar el producto de la base de datos
             boolean exito = DaoProducto.eliminarProducto(producto);
 
             if (exito) {
-                // Si la eliminación fue exitosa, mostramos una alerta de éxito
                 ArrayList<String> mensajesExito = new ArrayList<>();
                 mensajesExito.add("El producto se ha eliminado correctamente.");
                 confirmacion("Producto Eliminado", mensajesExito);
 
-                // Recargar la tabla de productos
                 cargarProductos();
 
-                // Limpiar el formulario
                 limpiar();
 
-                // Restaurar el estado de los botones
                 txtCodigo.setDisable(false);
                 btActualizar.setDisable(true);
                 btCrear.setDisable(false);
             } else {
-                // Si ocurrió un error, mostramos una alerta de error
                 ArrayList<String> textosError = new ArrayList<>();
                 textosError.add("Ha ocurrido un error al intentar eliminar el producto.");
                 alerta(textosError);
@@ -169,48 +164,42 @@ public class ProductoController implements Initializable {
 
     }
 
-
+    /**
+     * Muestra la imagen del producto seleccionado en una nueva ventana.
+     *
+     * @param o objeto que puede ser utilizado para manejar el evento (en este caso no se usa).
+     */
     private void verImg(Object o) {
-        // Obtener el producto seleccionado de la tabla
         Producto producto = tablaVista.getSelectionModel().getSelectedItem();
 
         if (producto == null || producto.getImagen() == null) {
-            // Si no hay imagen, mostramos una alerta
             ArrayList<String> mensajes = new ArrayList<>();
             mensajes.add("Este producto no tiene imagen asociada.");
-            alerta(mensajes);  // Usar el método alerta para mostrar el mensaje
+            alerta(mensajes);
             return;
         }
 
-        // Si existe una imagen, creamos una ventana modal para mostrarla
         try {
-            // Convertir el Blob de la imagen en un InputStream
             Blob blob = producto.getImagen();
             InputStream imagenStream = blob.getBinaryStream();
             Image image = new Image(imagenStream);
 
-            // Crear una nueva ventana para mostrar la imagen
             Stage ventanaImagen = new Stage();
             ventanaImagen.setTitle("Ver Imagen");
-            ventanaImagen.setResizable(false);  // Evitar que la ventana se redimensione
+            ventanaImagen.setResizable(false);
 
-            // Crear un ImageView para mostrar la imagen
             ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(300);  // Establecer tamaño de la imagen
+            imageView.setFitWidth(300);
             imageView.setFitHeight(300);
 
-            // Crear un layout para agregar el ImageView
             StackPane root = new StackPane();
             root.getChildren().add(imageView);
 
-            // Crear la escena y asignarla a la ventana
             Scene scene = new Scene(root, 300, 300);
             ventanaImagen.setScene(scene);
 
-            // Mostrar la ventana modal
             ventanaImagen.show();
         } catch (SQLException e) {
-            // Si ocurre un error al obtener la imagen, mostrar una alerta de error
             ArrayList<String> mensajesError = new ArrayList<>();
             mensajesError.add("No se ha podido cargar la imagen del producto.");
             alerta(mensajesError);
@@ -227,7 +216,11 @@ public class ProductoController implements Initializable {
         tablaVista.setItems(productosData);
     }
 
-
+    /**
+     * Muestra una ventana de información sobre la aplicación.
+     *
+     * @param event evento que se dispara al hacer clic en el botón de "Acerca de".
+     */
     @FXML
     void acercaDe(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -237,58 +230,64 @@ public class ProductoController implements Initializable {
         alert.showAndWait();
     }
 
-
+    /**
+     * Actualiza un producto en la base de datos.
+     *
+     * @param event evento que se dispara al hacer clic en el botón de "Actualizar".
+     */
     @FXML
     void actualizar(ActionEvent event) {
-        // Obtener los datos del formulario (asumiendo que ya están en los campos de texto)
+
         String codigo = txtCodigo.getText();
         String nombre = txtNombre.getText();
         double precio = Double.parseDouble(txtPrecio.getText());
-        boolean disponible = checkBox.isSelected(); // Se asume que hay un CheckBox llamado cbDisponible
-        Blob imagen = this.blob; // Asumimos que ya tienes la imagen cargada
+        boolean disponible = checkBox.isSelected();
+        Blob imagen = this.blob;
 
-        // Crear el objeto Producto con los datos del formulario
+
         Producto producto = new Producto(codigo, nombre, precio, disponible, imagen);
 
-        // Llamar al metodo modificarProducto para actualizar en la base de datos
+
         boolean exito = DaoProducto.modificarProducto(producto);
 
-        // Si la actualización fue exitosa
         if (exito) {
-            // Crear lista de textos para la alerta de éxito
+
             ArrayList<String> mensajesActualizacion = new ArrayList<>();
             mensajesActualizacion.add("El producto se ha actualizado correctamente.");
             confirmacion("Producto Actualizado", mensajesActualizacion);
 
 
-            cargarProductos(); // Recargar los productos en la tabla
-            limpiar(); // Limpiar los campos
+            cargarProductos();
+            limpiar();
         } else {
-            // Si ocurrió un error, crear lista de textos para la alerta de error
+
             ArrayList<String> textosError = new ArrayList<>();
             textosError.add("Ha ocurrido un error al intentar modificar el producto.");
             alerta(textosError);
         }
     }
 
-
+    /**
+     * Crea un producto en la base de datos.
+     *
+     * @param event evento que se dispara al hacer clic en el botón de "Crear".
+     */
     @FXML
     void crear(ActionEvent event) {
         ArrayList<String> failMessages = new ArrayList<>();
 
-        // Validación de código: debe tener exactamente 5 caracteres
+
         String codigo = txtCodigo.getText();
         if (codigo.length() != 5) {
             failMessages.add("El código debe tener exactamente 5 caracteres.");
         }
 
-        // Validación de nombre: campo obligatorio
+
         String nombre = txtNombre.getText();
         if (nombre.isEmpty()) {
             failMessages.add("El nombre es obligatorio.");
         }
 
-        // Validación de precio: debe ser un número decimal y no vacío
         String precioStr = txtPrecio.getText();
         if (precioStr.isEmpty()) {
             failMessages.add("El precio es obligatorio.");
@@ -303,44 +302,44 @@ public class ProductoController implements Initializable {
             }
         }
 
-        // Si hay errores, mostrar la alerta de error y no continuar
+
         if (!failMessages.isEmpty()) {
             alerta(failMessages);
             return;
         }
 
-        // Si las validaciones son correctas, proceder a guardar el producto
-        // Crear el nuevo producto
+
         Producto nuevoProducto = new Producto(codigo, nombre, Double.parseDouble(precioStr), true, blob);
 
-        // Llamar al DAO para guardar el producto en la base de datos
+
         boolean success = DaoProducto.guardarProducto(nuevoProducto);
 
         if (success) {
-            // Informar al usuario que todo ha ido bien
+
             ArrayList<String> mensajesActualizacion = new ArrayList<>();
             mensajesActualizacion.add("El producto se ha creado correctamente.");
             confirmacion("Producto Creado", mensajesActualizacion);
 
 
-            // Volver a cargar los productos y limpiar los campos
             cargarProductos();
             limpiar();
         } else {
-            // Error genérico al guardar el producto
+
             ArrayList<String> dbErrorMessages = new ArrayList<>();
             dbErrorMessages.add("Ha ocurrido un error al guardar el producto en la base de datos.");
             alerta(dbErrorMessages);
         }
     }
-
+    /**
+     * Limpia los campos y restablece los botones al inicio de los botones.
+     */
     @FXML
     void limpiar() {
         txtCodigo.clear();
         txtNombre.clear();
         txtPrecio.clear();
-        img.setImage(null); // Limpiar la imagen seleccionada
-        blob = null; // Limpiar la imagen en Blob
+        img.setImage(null);
+        blob = null;
         checkBox.setSelected(false);
         btCrear.setDisable(false);
         btActualizar.setDisable(true);
@@ -348,7 +347,14 @@ public class ProductoController implements Initializable {
         tablaVista.getSelectionModel().clearSelection();
     }
 
-
+    /**
+     * Abre un cuadro de diálogo para seleccionar una imagen desde el sistema de archivos.
+     * Si se selecciona una imagen, verifica su tamaño y la muestra en la interfaz.
+     * Si la imagen es mayor a 64 KB, muestra un mensaje de error.
+     * Además, convierte la imagen seleccionada en un objeto Blob y lo almacena para su posterior uso.
+     *
+     * @param event El evento que se genera al hacer clic en el botón para seleccionar la imagen.
+     */
     @FXML
     void seleccionarImagen(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
@@ -390,9 +396,14 @@ public class ProductoController implements Initializable {
         alerta.setContentText(contenido);
         alerta.showAndWait();
     }
-
+    /**
+     * Muestra una confirmacion con los mensajes proporcionados.
+     *
+     * @param titulo EL titulo de la alerta
+     * @param mensajes Los textos de error a mostrar en la alerta.
+     */
     public void confirmacion(String titulo, ArrayList<String> mensajes) {
-        String contenido = String.join("\n", mensajes);  // Unir todos los mensajes en un solo string
+        String contenido = String.join("\n", mensajes);
         Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
         successAlert.setTitle(titulo);
         successAlert.setHeaderText(null);
