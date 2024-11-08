@@ -3,6 +3,7 @@ package com.benat.cano.examen1dein.controllers;
 import com.benat.cano.examen1dein.dao.DaoProducto;
 import com.benat.cano.examen1dein.model.Producto;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -47,11 +48,8 @@ public class ProductoController implements Initializable {
         colNom.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getNombre()));
         colPrec.setCellValueFactory(cellData -> cellData.getValue().getPrecio() == 0 ? null : new ReadOnlyObjectWrapper<>(cellData.getValue().getPrecio()));
 
-        // Para la columna de 'Disponible', usamos un CheckBoxTableCell
-        colDisp.setCellValueFactory(cellData -> {
-            // Enlazamos el valor disponible (boolean) con la celda
-            return new ReadOnlyObjectWrapper<>(cellData.getValue().isDisponible());
-        });
+        colDisp.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().isDisponible()));
+
 
         // Usamos CheckBoxTableCell para mostrar el CheckBox en cada fila
         colDisp.setCellFactory(CheckBoxTableCell.forTableColumn(colDisp));
