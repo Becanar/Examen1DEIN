@@ -2,6 +2,7 @@ package com.benat.cano.examen1dein.app;
 
 import com.benat.cano.examen1dein.dao.DaoProducto;
 import com.benat.cano.examen1dein.model.Producto;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -41,10 +42,10 @@ public class ProductoController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Inicializa las columnas de la tabla
-        clCod.setCellValueFactory(cellData -> cellData.getValue().codigoProperty().asObject());
-        colNom.setCellValueFactory(cellData -> cellData.getValue().nombreProperty());
-        colPrec.setCellValueFactory(cellData -> cellData.getValue().precioProperty().asObject());
-        colDisp.setCellValueFactory(cellData -> cellData.getValue().disponibleProperty());
+        clCod.setCellValueFactory(cellData -> cellData.getValue().getCodigo() == 0 ? null : new ReadOnlyObjectWrapper<>(cellData.getValue().getCodigo()));
+        colNom.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getNombre()));
+        colPrec.setCellValueFactory(cellData -> cellData.getValue().getPrecio() == 0 ? null : new ReadOnlyObjectWrapper<>(cellData.getValue().getPrecio()));
+        colDisp.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().isDisponible()));
 
         // Cargar datos desde la base de datos
         cargarProductos();
