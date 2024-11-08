@@ -36,7 +36,7 @@ public class App extends Application {
         stage.show();
     }
     /**
-     * Metodo main que lanza la aplicación.a
+     * Metodo main que lanza la aplicacion.a
      * @param args Argumentos de la línea de comandos.
      */
     public static void main(String[] args) {
