@@ -1,4 +1,4 @@
-package com.benat.cano.examen1dein.app;
+package com.benat.cano.examen1dein;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

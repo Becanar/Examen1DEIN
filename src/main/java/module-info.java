@@ -1,6 +1,7 @@
 module com.benat.cano.examen1dein {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.sql;
 
 
     opens com.benat.cano.examen1dein to javafx.fxml;
