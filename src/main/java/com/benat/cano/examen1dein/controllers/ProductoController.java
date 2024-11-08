@@ -73,13 +73,19 @@ public class ProductoController implements Initializable {
 
                 // Asignar la imagen al ImageView
                 if (productoSeleccionado.getImagen() != null) {
-                    img.setImage(new Image("file:" + productoSeleccionado.getImagen()));
+                    // Convertir el Blob en InputStream
+                    Blob blob = productoSeleccionado.getImagen();
+                    try {
+                        InputStream imagenStream = blob.getBinaryStream();
+                        img.setImage(new Image(imagenStream));
+                    } catch (SQLException e) {
+                        System.err.println("Error al convertir Blob a InputStream: " + e.getMessage());
+                    }
                 } else {
-                    img.setImage(null);
+                    img.setImage(null); // Si no tiene imagen, limpia la vista
                 }
 
                 // Establecer el estado del CheckBox (disponible o no)
-                // Aquí se asume que hay un método en el Producto que indica si está disponible
                 checkBox.setSelected(productoSeleccionado.isDisponible());
 
                 // Deshabilitar el campo código y habilitar el botón Actualizar
@@ -88,6 +94,7 @@ public class ProductoController implements Initializable {
                 btCrear.setDisable(true);
             }
         });
+
 
         FontIcon iconoAniadir = new FontIcon(FontAwesomeRegular.IMAGE);
         btImagen.setGraphic(iconoAniadir);
@@ -221,6 +228,9 @@ public class ProductoController implements Initializable {
         img.setImage(null); // Limpiar la imagen seleccionada
         blob = null; // Limpiar la imagen en Blob
         checkBox.setSelected(false);
+        btCrear.setDisable(false);
+        btActualizar.setDisable(true);
+        txtCodigo.setDisable(false);
         tablaVista.getSelectionModel().clearSelection();
     }
 
