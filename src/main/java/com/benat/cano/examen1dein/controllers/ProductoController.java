@@ -52,12 +52,43 @@ public class ProductoController implements Initializable {
 
     @FXML
     private Button btCrear, btActualizar, btLimpiar, btImagen;
+    @FXML
+    private CheckBox checkBox;
 
     private ObservableList<Producto> productosData;
     private Blob blob;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        tablaVista.getSelectionModel().clearSelection();
+        tablaVista.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                // Cargar los datos del producto en el formulario
+                Producto productoSeleccionado = newValue;
+
+                // Asignar los valores al formulario
+                txtCodigo.setText(productoSeleccionado.getCodigo());
+                txtNombre.setText(productoSeleccionado.getNombre());
+                txtPrecio.setText(String.valueOf(productoSeleccionado.getPrecio()));
+
+                // Asignar la imagen al ImageView
+                if (productoSeleccionado.getImagen() != null) {
+                    img.setImage(new Image("file:" + productoSeleccionado.getImagen()));
+                } else {
+                    img.setImage(null);
+                }
+
+                // Establecer el estado del CheckBox (disponible o no)
+                // Aquí se asume que hay un método en el Producto que indica si está disponible
+                checkBox.setSelected(productoSeleccionado.isDisponible());
+
+                // Deshabilitar el campo código y habilitar el botón Actualizar
+                txtCodigo.setDisable(true);
+                btActualizar.setDisable(false);
+                btCrear.setDisable(true);
+            }
+        });
+
         FontIcon iconoAniadir = new FontIcon(FontAwesomeRegular.IMAGE);
         btImagen.setGraphic(iconoAniadir);
         // Inicializa las columnas de la tabla
@@ -73,7 +104,26 @@ public class ProductoController implements Initializable {
 
         // Cargar datos desde la base de datos
         cargarProductos();
+
+        ContextMenu contextMenu = new ContextMenu();
+
+        MenuItem editItem = new MenuItem("Ver imagen");
+        editItem.setOnAction(event -> verImg(null));
+
+
+        MenuItem deleteItem = new MenuItem("Eliminar");
+        deleteItem.setOnAction(event -> borrar(null));
+
+        contextMenu.getItems().addAll(editItem, deleteItem);
+
+        tablaVista.setContextMenu(contextMenu);
         btActualizar.setDisable(true);
+    }
+
+    private void borrar(Object o) {
+    }
+
+    private void verImg(Object o) {
     }
 
     /**
@@ -170,6 +220,8 @@ public class ProductoController implements Initializable {
         txtPrecio.clear();
         img.setImage(null); // Limpiar la imagen seleccionada
         blob = null; // Limpiar la imagen en Blob
+        checkBox.setSelected(false);
+        tablaVista.getSelectionModel().clearSelection();
     }
 
 
