@@ -20,7 +20,10 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("/com/benat/cano/examen1dein/fxml/Productos.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setResizable(false);
+        stage.setMinWidth(700);
+        stage.setMinHeight(750);
+        stage.setMaxWidth(1100);
+        stage.setMaxHeight(800);
         try {
             Image img = new Image(getClass().getResource("/com/benat/cano/examen1dein/images/carrito.png").toString());
             stage.getIcons().add(img);

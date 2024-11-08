@@ -18,14 +18,14 @@ public class DaoProducto {
      */
     public static List<Producto> obtenerProductos() {
         List<Producto> productos = new ArrayList<>();
-        String query = "SELECT codigo, nombre, precio, disponible, imagen FROM Producto";
+        String query = "SELECT codigo, nombre, precio, disponible, imagen FROM productos";
         ConectorDB conn;
         try {
             conn=new ConectorDB();
             PreparedStatement stmt = conn.getConnection().prepareStatement(query);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                int codigo = rs.getInt("codigo");
+                String codigo = rs.getString("codigo");
                 String nombre = rs.getString("nombre");
                 double precio = rs.getDouble("precio");
                 boolean disponible = rs.getInt("disponible") == 1;

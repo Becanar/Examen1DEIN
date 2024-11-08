@@ -4,7 +4,7 @@ import java.sql.Blob;
 import java.util.Objects;
 
 public class Producto {
-    private int codigo;
+    private String codigo;
     private String nombre;
     private double precio;
     private boolean disponible;
@@ -19,7 +19,7 @@ public class Producto {
      * @param disponible Estado de disponibilidad del producto (true para disponible, false para no disponible).
      * @param imagen     La imagen del producto en formato Blob.
      */
-    public Producto(int codigo, String nombre, double precio, boolean disponible, Blob imagen) {
+    public Producto(String codigo, String nombre, double precio, boolean disponible, Blob imagen) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.precio = precio;
@@ -35,15 +35,15 @@ public class Producto {
      * @param precio     El precio del producto.
      * @param disponible Estado de disponibilidad del producto (true para disponible, false para no disponible).
      */
-    public Producto(int codigo, String nombre, double precio, boolean disponible) {
+    public Producto(String codigo, String nombre, double precio, boolean disponible) {
         this(codigo, nombre, precio, disponible, null);
     }
 
-    public int getCodigo() {
+    public String getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(int codigo) {
+    public void setCodigo(String codigo) {
         this.codigo = codigo;
     }
 

@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.benat.cano.examen1dein.app.ProductoController">
+<VBox fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1000.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.benat.cano.examen1dein.controllers.ProductoController">
    <children>
       <MenuBar fx:id="barraMenu" maxWidth="1.7976931348623157E308">
          <menus>
@@ -94,7 +94,7 @@
             </Button>
          </children>
       </HBox>
-      <HBox prefHeight="40.0" prefWidth="1000.0">
+      <HBox prefHeight="69.0" prefWidth="1000.0">
          <children>
             <Button fx:id="btCrear" mnemonicParsing="false" onAction="#crear" prefHeight="24.0" prefWidth="84.0" text="Crear">
                <HBox.margin>
@@ -112,6 +112,9 @@
                </HBox.margin>
             </Button>
          </children>
+         <VBox.margin>
+            <Insets bottom="10.0" />
+         </VBox.margin>
       </HBox>
       <TableView fx:id="tablaVista">
          <VBox.margin>

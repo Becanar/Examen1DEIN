@@ -6,6 +6,6 @@ module com.benat.cano.examen1dein {
 
     opens com.benat.cano.examen1dein to javafx.fxml;
     exports com.benat.cano.examen1dein;
-    exports com.benat.cano.examen1dein.app;
-    opens com.benat.cano.examen1dein.app to javafx.fxml;
+    exports com.benat.cano.examen1dein.controllers;
+    opens com.benat.cano.examen1dein.controllers to javafx.fxml;
 }

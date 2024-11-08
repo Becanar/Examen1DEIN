@@ -1,4 +1,4 @@
-package com.benat.cano.examen1dein.app;
+package com.benat.cano.examen1dein.controllers;
 
 import com.benat.cano.examen1dein.dao.DaoProducto;
 import com.benat.cano.examen1dein.model.Producto;
@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
 
 import java.net.URL;
 import java.util.List;
@@ -20,16 +21,16 @@ public class ProductoController implements Initializable {
     private TableView<Producto> tablaVista;
 
     @FXML
-    private TableColumn<Producto, Integer> clCod;
+    private TableColumn<Producto, String> clCod; // Columna de Código
 
     @FXML
-    private TableColumn<Producto, String> colNom;
+    private TableColumn<Producto, String> colNom; // Columna de Nombre
 
     @FXML
-    private TableColumn<Producto, Double> colPrec;
+    private TableColumn<Producto, Double> colPrec; // Columna de Precio
 
     @FXML
-    private TableColumn<Producto, Boolean> colDisp;
+    private TableColumn<Producto, Boolean> colDisp; // Columna de Disponible (con CheckBox)
 
     @FXML
     private TextField txtCodigo, txtNombre, txtPrecio;
@@ -42,10 +43,18 @@ public class ProductoController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Inicializa las columnas de la tabla
-        clCod.setCellValueFactory(cellData -> cellData.getValue().getCodigo() == 0 ? null : new ReadOnlyObjectWrapper<>(cellData.getValue().getCodigo()));
+        clCod.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getCodigo()));
         colNom.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getNombre()));
         colPrec.setCellValueFactory(cellData -> cellData.getValue().getPrecio() == 0 ? null : new ReadOnlyObjectWrapper<>(cellData.getValue().getPrecio()));
-        colDisp.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().isDisponible()));
+
+        // Para la columna de 'Disponible', usamos un CheckBoxTableCell
+        colDisp.setCellValueFactory(cellData -> {
+            // Enlazamos el valor disponible (boolean) con la celda
+            return new ReadOnlyObjectWrapper<>(cellData.getValue().isDisponible());
+        });
+
+        // Usamos CheckBoxTableCell para mostrar el CheckBox en cada fila
+        colDisp.setCellFactory(CheckBoxTableCell.forTableColumn(colDisp));
 
         // Cargar datos desde la base de datos
         cargarProductos();
@@ -60,10 +69,16 @@ public class ProductoController implements Initializable {
         tablaVista.setItems(productosData);
     }
 
+
     @FXML
     void acercaDe(ActionEvent event) {
-        // Lógica para mostrar la información acerca de
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Info");
+        alert.setHeaderText("Gestión de productos 1.0");
+        alert.setContentText("Autor: Beñat Cano");
+        alert.showAndWait();
     }
+
 
     @FXML
     void actualizar(ActionEvent event) {
