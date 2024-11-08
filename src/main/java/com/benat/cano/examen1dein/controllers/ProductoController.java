@@ -145,10 +145,11 @@ public class ProductoController implements Initializable {
 
                 if (exito) {
                     // Si la eliminación fue exitosa, mostramos una alerta de éxito
-                    ArrayList<String> textosExito = new ArrayList<>();
-                    textosExito.add("El producto ha sido eliminado correctamente.");
-                    alerta(textosExito); // Usamos el método alerta ya implementado para mostrar el mensaje
-
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setTitle("Producto Creado");
+                    successAlert.setHeaderText(null);
+                    successAlert.setContentText("El producto se ha creado correctamente.");
+                    successAlert.showAndWait();
                     // Recargar la tabla de productos
                     cargarProductos();
 
