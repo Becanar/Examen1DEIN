@@ -10,6 +10,7 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -92,6 +93,11 @@
                   <Insets top="10.0" />
                </HBox.margin>
             </Button>
+            <ImageView fx:id="img" fitHeight="50.0" fitWidth="71.0" pickOnBounds="true" preserveRatio="true">
+               <HBox.margin>
+                  <Insets left="50.0" />
+               </HBox.margin>
+            </ImageView>
          </children>
       </HBox>
       <HBox prefHeight="69.0" prefWidth="1000.0">

@@ -11,8 +11,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.sql.Blob;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -20,6 +30,8 @@ public class ProductoController implements Initializable {
 
     @FXML
     private TableView<Producto> tablaVista;
+    @FXML
+    private ImageView img;
 
     @FXML
     private TableColumn<Producto, String> clCod; // Columna de Código
@@ -40,6 +52,7 @@ public class ProductoController implements Initializable {
     private Button btCrear, btActualizar, btLimpiar, btImagen;
 
     private ObservableList<Producto> productosData;
+    private Blob blob;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -56,6 +69,7 @@ public class ProductoController implements Initializable {
 
         // Cargar datos desde la base de datos
         cargarProductos();
+        btActualizar.setDisable(true);
     }
 
     /**
@@ -97,6 +111,42 @@ public class ProductoController implements Initializable {
 
     @FXML
     void seleccionarImagen(ActionEvent event) {
-        // Lógica para seleccionar y cargar una imagen para el producto
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Selecciona una imagen");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.jpeg", "*.png"));
+        fileChooser.setInitialDirectory(new File("."));
+        File file = fileChooser.showOpenDialog(null);
+        try {
+            double kbs = (double) file.length() / 1024;
+            if (kbs > 64) {
+                ArrayList<String> failMessages = new ArrayList<>();
+                failMessages.add("La imagen es demasiado grande.");
+                alerta(failMessages);
+            } else {
+                InputStream imagen = new FileInputStream(file);
+                Blob blob = DaoProducto.convertFileToBlob(file);
+                this.blob = blob;
+                img.setImage(new Image(imagen));
+            }
+        } catch (IOException | NullPointerException e) {
+            System.out.println("Imagen no seleccionada");
+        } catch (SQLException e) {
+            ArrayList<String> failMessages = new ArrayList<>();
+            failMessages.add("No se ha podido seleccionar la imagen.");
+            alerta(failMessages);
+        }
+    }
+    /**
+     * Muestra una alerta con los mensajes de error proporcionados.
+     *
+     * @param textos Los textos de error a mostrar en la alerta.
+     */
+    public void alerta(ArrayList<String> textos) {
+        String contenido = String.join("\n", textos);
+        Alert alerta = new Alert(Alert.AlertType.ERROR);
+        alerta.setHeaderText(null);
+        alerta.setTitle("Error");
+        alerta.setContentText(contenido);
+        alerta.showAndWait();
     }
 }
