@@ -155,8 +155,38 @@ public class ProductoController implements Initializable {
 
     @FXML
     void actualizar(ActionEvent event) {
-        // Lógica para actualizar un producto existente
+        // Obtener los datos del formulario (asumiendo que ya están en los campos de texto)
+        String codigo = txtCodigo.getText();
+        String nombre = txtNombre.getText();
+        double precio = Double.parseDouble(txtPrecio.getText());
+        boolean disponible = checkBox.isSelected(); // Se asume que hay un CheckBox llamado cbDisponible
+        Blob imagen = this.blob; // Asumimos que ya tienes la imagen cargada
+
+        // Crear el objeto Producto con los datos del formulario
+        Producto producto = new Producto(codigo, nombre, precio, disponible, imagen);
+
+        // Llamar al metodo modificarProducto para actualizar en la base de datos
+        boolean exito = DaoProducto.modificarProducto(producto);
+
+        // Si la actualización fue exitosa
+        if (exito) {
+            // Crear lista de textos para la alerta de éxito
+            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+            successAlert.setTitle("Producto Creado");
+            successAlert.setHeaderText(null);
+            successAlert.setContentText("El producto se ha creado correctamente.");
+            successAlert.showAndWait();
+
+            cargarProductos(); // Recargar los productos en la tabla
+            limpiar(); // Limpiar los campos
+        } else {
+            // Si ocurrió un error, crear lista de textos para la alerta de error
+            ArrayList<String> textosError = new ArrayList<>();
+            textosError.add("Ha ocurrido un error al intentar modificar el producto.");
+            alerta(textosError);
+        }
     }
+
 
     @FXML
     void crear(ActionEvent event) {

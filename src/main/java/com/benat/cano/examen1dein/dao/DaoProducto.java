@@ -104,5 +104,34 @@ public class DaoProducto {
     }
 
 
+    public static boolean modificarProducto(Producto producto) {
+        String consulta = "UPDATE productos SET nombre = ?, precio = ?, disponible = ?, imagen = ? WHERE codigo = ?";
+        ConectorDB conn;
+        try {
+            conn = new ConectorDB();
+            PreparedStatement stmt = conn.getConnection().prepareStatement(consulta);
+
+            // Establecer los valores de los parámetros en la consulta
+            stmt.setString(1, producto.getNombre());
+            stmt.setDouble(2, producto.getPrecio());
+            stmt.setInt(3, producto.isDisponible() ? 1 : 0);
+
+            // Guardar la imagen como Blob (si existe)
+            if (producto.getImagen() != null) {
+                stmt.setBlob(4, producto.getImagen());
+            } else {
+                stmt.setNull(4, Types.BLOB); // Si no hay imagen, establecemos NULL en la columna de imagen
+            }
+
+            stmt.setString(5, producto.getCodigo()); // El código se usa para identificar el producto a modificar
+
+            // Ejecutar la consulta
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0; // Si la actualización fue exitosa, devuelve true
+        } catch (SQLException | FileNotFoundException e) {
+            System.err.println("Error al modificar el producto: " + e.getMessage());
+            return false; // Si hay un error, devolvemos false
+        }
+    }
 
 }
